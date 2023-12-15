@@ -1,0 +1,26 @@
+[tool.poetry]
+name = "github_graphql_client"
+version = "0.1.0"
+description = "Github GraphQL client for Habr."
+authors = ["FirstName SecondName <email>"]
+readme = "README.md"
+packages = [{include = "github_graphql_client"}]
+
+[tool.poetry.dependencies]
+python = "^3.11"
+python-dotenv = "^1.0.0"
+requests = "^2.31.0"
+gql = {extras = ["all"], version = "^3.4.1"}
+
+[tool.poetry.group.dev.dependencies]
+black = "^23.12.0"
+isort = "^5.13.2"
+
+[tool.black]
+line-length = 79
+target-version = ['py310']
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
