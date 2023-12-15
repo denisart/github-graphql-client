@@ -3,6 +3,7 @@ import os
 from dotenv import load_dotenv
 
 from github_graphql_client.client.requests_client import RequestsClient
+from github_graphql_client.client.gql_client import GqlClient
 from github_graphql_client.runner import GraphQLClientRunner
 from github_graphql_client.queries.repository import repository_issues_query
 
@@ -13,10 +14,15 @@ GITHUB_GRAPHQL_ENDPOINT = os.environ.get("GITHUB_GRAPHQL_ENDPOINT")
 
 
 def main():
-    client = RequestsClient(
+    r_client = RequestsClient(
         endpoint=GITHUB_GRAPHQL_ENDPOINT, token=GITHUB_TOKEN
     )
-    r_runner = GraphQLClientRunner(client=client)
+    r_runner = GraphQLClientRunner(client=r_client)
+
+    gql_client = GqlClient(
+        endpoint=GITHUB_GRAPHQL_ENDPOINT, token=GITHUB_TOKEN
+    )
+    gql_runner = GraphQLClientRunner(client=gql_client)
 
     data = r_runner.execute(repository_issues_query, {})
     print(data)

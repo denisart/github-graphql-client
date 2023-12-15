@@ -26,6 +26,7 @@ site_url: https://denisart.github.io/github-graphql-client/
 nav:
     - Preparation: preparation.md
     - First query: first_query.md
+    - Gql client: gql_client.md
 
 plugins:
   - search

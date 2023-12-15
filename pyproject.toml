@@ -21,6 +21,10 @@ isort = "^5.13.2"
 mkdocs = "^1.5.3"
 mkdocs-material = "^9.5.2"
 
+
+[tool.poetry.group.test.dependencies]
+pytest = "^7.4.3"
+
 [tool.black]
 line-length = 79
 target-version = ['py310']
