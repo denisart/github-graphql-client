@@ -16,6 +16,11 @@ gql = {extras = ["all"], version = "^3.4.1"}
 black = "^23.12.0"
 isort = "^5.13.2"
 
+
+[tool.poetry.group.docs.dependencies]
+mkdocs = "^1.5.3"
+mkdocs-material = "^9.5.2"
+
 [tool.black]
 line-length = 79
 target-version = ['py310']
