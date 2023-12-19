@@ -1,14 +1,14 @@
 ## Первый запрос
 
 Самое простое, что должен уметь наш клиент -- выполнять запросы. Создадим
-для этого абстрактный класс. Добавим несколько новых файлов
+для этого абстрактный класс и добавим несколько новых файлов
 
 ```bash
 mkdir github_graphql_client/client
 touch github_graphql_client/client/__init__.py github_graphql_client/client/base.py
 ```
 
-В файле `github_graphql_client/client/base.py` и определим наш абстрактный класс.
+В файле `github_graphql_client/client/base.py` и определим наш абстрактный класс `BaseGraphQLClient`.
 
 ```python
 # Файл `github_graphql_client/client/base.py`
@@ -44,10 +44,11 @@ class BaseGraphQLClient:
 
 ```
 
-Далее любую реализацию клиента будем наследовать от `BaseGraphQLClient`.
+В базовом классе мы сразу реализовали метод, который формирует 
+header нашего запроса. Далее любую реализацию клиента будем наследовать от `BaseGraphQLClient`.
 
-Так, как `GraphQL` запрос есть по сути обычный `POST` запрос -- первый клиент
-будет реализован с помощью пакета [requests](https://pypi.org/project/requests/). Для начала добавим
+Так, как `GraphQL` запрос есть по сути обычный `POST` запрос -- простой клиент
+может быть реализован с помощью пакета [requests](https://pypi.org/project/requests/). Для начала добавим
 его в проект
 
 ```bash
@@ -83,9 +84,9 @@ class RequestsClient(BaseGraphQLClient):
 
 [Обычно](https://graphql.org/learn/best-practices/) `GraphQL` работает через `HTTP/HTTPS` с некоторым `POST`,
 который ожидает на входе `json` с полями `query: str` и `variables: dict[str, Any]`.
-Именно так это работает у `github GraphQL API`, именно это и реализовали выше.
+Именно так это работает в `github GraphQL API`.
 
-Добавим `runner`, который будет запускать наши клиенты. Для этого создадим новый файл
+Добавим `runner`, который умеет запускать наши клиенты. Для этого создадим новый файл
 `github_graphql_client/runner.py`.
 
 ```python
@@ -123,9 +124,8 @@ class GraphQLClientRunner:
 
 ```
 
-Для отслеживания запуска будем использовать декоратор `check_execute`. Пока он будет
-выводить время выполнения метода `client.execute`.
-В итоге, типичный пример запуска будет следующим
+Для отслеживания запуска будем использовать декоратор `check_execute`. Пока он умеет
+выводить время выполнения метода `client.execute`.  В итоге, типичный пример запуска будет следующим
 
 ```python
 client = RequestsClient(endpoint="...", token="...")
@@ -137,7 +137,7 @@ runner.execute(query="...", variables={})
 
 Давайте же совершим первый осмысленный запрос. Схему `github GraphQL API`
 можно посмотреть [тут](https://docs.github.com/en/graphql/overview/public-schema). Напишем
-простой запрос, который вернет несколько issues из заданного репозитория.
+простой `query`, который вернет несколько `issues` из выбранного репозитория.
 
 Создадим для хранения запросов отдельную папку
 
@@ -166,8 +166,7 @@ query {
 ```
 
 Для примера, получим две последних закрытых issues из нового проекта
-автора `pydantic` -- [FastUI](https://github.com/pydantic/FastUI).
-Для этого создадим скрипт `scripts/run.py`
+автора `pydantic` -- [FastUI](https://github.com/pydantic/FastUI). Для удобства добавим скрипт `scripts/run.py`
 
 ```python
 # Файл `scripts/run.py`
@@ -202,4 +201,4 @@ if __name__ == "__main__":
 # {'repository': {'issues': {'edges': [{'node': {'title': 'Proposal: New Syntax for components declaration', 'url': 'https://github.com/pydantic/FastUI/issues/84'}}, {'node': {'title': 'fastui requires fastapi', 'url': 'https://github.com/pydantic/FastUI/issues/85'}}]}}}
 ```
 
-Проект активно живет, так что вы получите другие issues :)
+Проект активно живет, так что вы должны получить другие issues :)
