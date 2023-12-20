@@ -22,7 +22,7 @@ class BaseGraphQLClient:
     token: str
 
     def __init__(
-        self, endpoint: str, token: str, *args: Any, **kwargs: Any
+        self, endpoint: str, token: str, **kwargs: Any
     ) -> None:
         self.endpoint = endpoint
         self.token = token
@@ -31,7 +31,7 @@ class BaseGraphQLClient:
         return {"Authorization": f"Bearer {self.token}"}
 
     def execute(
-        self, query: str, variables: dict[str, Any], *args: Any, **kwargs: Any
+        self, query: str, variables: dict[str, Any], **kwargs: Any
     ) -> dict[str, Any]:
         raise NotImplementedError
 
@@ -63,7 +63,7 @@ class RequestsClient(BaseGraphQLClient):
     """GraphQL client based on `requests` library."""
 
     def execute(
-        self, query: str, variables: dict[str, Any], *args: Any, **kwargs: Any
+        self, query: str, variables: dict[str, Any], **kwargs: Any
     ) -> dict[str, Any]:
         response = r.post(
             url=self.endpoint,
