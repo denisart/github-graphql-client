@@ -21,9 +21,7 @@ class BaseGraphQLClient:
     endpoint: str
     token: str
 
-    def __init__(
-        self, endpoint: str, token: str, **kwargs: Any
-    ) -> None:
+    def __init__(self, endpoint: str, token: str, **kwargs: Any) -> None:
         self.endpoint = endpoint
         self.token = token
 

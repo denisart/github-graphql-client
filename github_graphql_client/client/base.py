@@ -1,11 +1,4 @@
-from typing import Any, Protocol
-
-
-class BaseGraphQLClientProtocol(Protocol):
-    def execute(
-        self, query: str, variables: dict[str, Any], *args: Any, **kwargs: Any
-    ) -> dict[str, Any]:
-        ...
+from typing import Any
 
 
 class BaseGraphQLClient:
@@ -14,9 +7,7 @@ class BaseGraphQLClient:
     endpoint: str
     token: str
 
-    def __init__(
-        self, endpoint: str, token: str, *args: Any, **kwargs: Any
-    ) -> None:
+    def __init__(self, endpoint: str, token: str, **kwargs: Any) -> None:
         self.endpoint = endpoint
         self.token = token
 
@@ -24,6 +15,6 @@ class BaseGraphQLClient:
         return {"Authorization": f"Bearer {self.token}"}
 
     def execute(
-        self, query: str, variables: dict[str, Any], *args: Any, **kwargs: Any
+        self, query: str, variables: dict[str, Any], **kwargs: Any
     ) -> dict[str, Any]:
         raise NotImplementedError
