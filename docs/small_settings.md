@@ -212,7 +212,7 @@ class RequestsClient(BaseGraphQLClient):
 
 ```
 
-Теперь запустим клиент в контекстном менеджере и в конце посмотрим значение `client.session`.
+Теперь запустим клиент в контекстном менеджере и в конце посмотрим на значение `client.session`.
 
 ```python
 # Файл `scripts/run.py`
@@ -253,3 +253,5 @@ if __name__ == "__main__":
 # Duration is 0.3070 seconds
 # client.session = None
 ```
+
+Остальные параметры вы можете добавить по аналогии. А мы пойдем дальше.
