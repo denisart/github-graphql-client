@@ -1,25 +1,18 @@
 ## Первый запрос
 
-Самое простое, что должен уметь наш клиент -- выполнять запросы. Создадим
-для этого абстрактный класс и добавим несколько новых файлов
+Самое простое, что должен уметь наш клиент -- выполнять запросы. Опишем это требование
+через абстрактный класс. Добавим несколько новых файлов
 
 ```bash
 mkdir github_graphql_client/client
 touch github_graphql_client/client/__init__.py github_graphql_client/client/base.py
 ```
 
-В файле `github_graphql_client/client/base.py` и определим наш абстрактный класс `BaseGraphQLClient`.
+В файле `github_graphql_client/client/base.py` определим класс `BaseGraphQLClient`
 
 ```python
 # Файл `github_graphql_client/client/base.py`
-from typing import Any, Protocol
-
-
-class BaseGraphQLClientProtocol(Protocol):
-    def execute(
-        self, query: str, variables: dict[str, Any], *args: Any, **kwargs: Any
-    ) -> dict[str, Any]:
-        ...
+from typing import Any
 
 
 class BaseGraphQLClient:
@@ -47,9 +40,9 @@ class BaseGraphQLClient:
 В базовом классе мы сразу реализовали метод, который формирует 
 header нашего запроса. Далее любую реализацию клиента будем наследовать от `BaseGraphQLClient`.
 
-Так, как `GraphQL` запрос есть по сути обычный `POST` запрос -- простой клиент
+Так, как `GraphQL` запрос есть по сути обычный `POST` запрос -- клиент
 может быть реализован с помощью пакета [requests](https://pypi.org/project/requests/). Для начала добавим
-его в проект
+зависимость
 
 ```bash
 poetry add requests
@@ -82,63 +75,14 @@ class RequestsClient(BaseGraphQLClient):
 
 ```
 
+Давайте же совершим первый осмысленный запрос. 
 [Обычно](https://graphql.org/learn/best-practices/) `GraphQL` работает через `HTTP/HTTPS` с некоторым `POST`,
 который ожидает на входе `json` с полями `query: str` и `variables: dict[str, Any]`.
-Именно так это работает в `github GraphQL API`.
+Именно так это работает в `github GraphQL API`. Схему `github GraphQL API`
+можно посмотреть [тут](https://docs.github.com/en/graphql/overview/public-schema).
 
-Добавим `runner`, который умеет запускать наши клиенты. Для этого создадим новый файл
-`github_graphql_client/runner.py`.
-
-```python
-# Файл `github_graphql_client/runner.py`
-import time
-from typing import Any
-
-from github_graphql_client.client.base import BaseGraphQLClientProtocol
-
-
-def check_execute(fn):
-    def wrapper(*args, **kwargs):
-        tic = time.perf_counter()
-        result = fn(*args, **kwargs)
-        toc = time.perf_counter()
-        print(f"Duration is {toc - tic:0.4f} seconds")
-        return result
-
-    return wrapper
-
-
-class GraphQLClientRunner:
-    client: BaseGraphQLClientProtocol
-
-    def __init__(
-        self, client: BaseGraphQLClientProtocol, *args: Any, **kwargs: Any
-    ) -> None:
-        self.client = client
-
-    @check_execute
-    def execute(
-        self, query: str, variables: dict[str, Any], *args: Any, **kwargs: Any
-    ) -> dict[str, Any]:
-        return self.client.execute(query, variables, *args, **kwargs)
-
-```
-
-Для отслеживания запуска будем использовать декоратор `check_execute`. Пока он умеет
-выводить время выполнения метода `client.execute`.  В итоге, типичный пример запуска будет следующим
-
-```python
-client = RequestsClient(endpoint="...", token="...")
-runner = GraphQLClientRunner(client=client)
-
-runner.execute(query="...", variables={})
-# Duration is ... seconds
-```
-
-Давайте же совершим первый осмысленный запрос. Схему `github GraphQL API`
-можно посмотреть [тут](https://docs.github.com/en/graphql/overview/public-schema). Напишем
-простой `query`, который вернет несколько `issues` из выбранного репозитория.
-
+Напишем `query`, который вернет несколько `issues` из выбранного репозитория.
+Для примера, рассмотрим новый проект автора `pydantic` -- [FastUI](https://github.com/pydantic/FastUI).
 Создадим для хранения запросов отдельную папку
 
 ```bash
@@ -162,20 +106,20 @@ query {
   }
 }
 """
-
 ```
 
-Для примера, получим две последних закрытых issues из нового проекта
-автора `pydantic` -- [FastUI](https://github.com/pydantic/FastUI). Для удобства добавим скрипт `scripts/run.py`
+Для удобства добавим скрипт `scripts/run.py`. Для отслеживания запуска будем использовать декоратор `check_execute`. 
 
 ```python
 # Файл `scripts/run.py`
 import os
+import time
+from typing import Any
 
 from dotenv import load_dotenv
 
+from github_graphql_client.client.base import BaseGraphQLClient
 from github_graphql_client.client.requests_client import RequestsClient
-from github_graphql_client.runner import GraphQLClientRunner
 from github_graphql_client.queries.repository import repository_issues_query
 
 load_dotenv()  # take environment variables from .env
@@ -184,21 +128,36 @@ GITHUB_TOKEN = os.environ.get("GITHUB_TOKEN")
 GITHUB_GRAPHQL_ENDPOINT = os.environ.get("GITHUB_GRAPHQL_ENDPOINT")
 
 
+def check_execute(fn):
+    def wrapper(*args, **kwargs):
+        tic = time.perf_counter()
+        result = fn(*args, **kwargs)
+        toc = time.perf_counter()
+        print(f"Duration is {toc - tic:0.4f} seconds")
+        return result
+
+    return wrapper
+
+
+@check_execute
+def execute_client(client: BaseGraphQLClient, **kwargs) -> Any:
+    return client.execute(**kwargs)
+
+
 def main():
     client = RequestsClient(
         endpoint=GITHUB_GRAPHQL_ENDPOINT, token=GITHUB_TOKEN
     )
-    r_runner = GraphQLClientRunner(client=client)
 
-    data = r_runner.execute(repository_issues_query, {})
+    data = execute_client(client, query=repository_issues_query, variables={})
     print(data)
 
 
 if __name__ == "__main__":
     main()
 
-# Duration is 0.4384 seconds
-# {'repository': {'issues': {'edges': [{'node': {'title': 'Proposal: New Syntax for components declaration', 'url': 'https://github.com/pydantic/FastUI/issues/84'}}, {'node': {'title': 'fastui requires fastapi', 'url': 'https://github.com/pydantic/FastUI/issues/85'}}]}}}
+# Duration is 0.5096 seconds
+# {'repository': {'issues': {'edges': [{'node': {'title': 'More PageEvent Triggers', 'url': 'https://github.com/pydantic/FastUI/issues/104'}}, {'node': {'title': 'TypeError: Interval() takes no arguments', 'url': 'https://github.com/pydantic/FastUI/issues/105'}}]}}}
 ```
 
-Проект активно живет, так что вы должны получить другие issues :)
+Мы получили несколько issues. Проект активно живет, так что вы должны получить другие issues :)
