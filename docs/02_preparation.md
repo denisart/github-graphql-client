@@ -17,9 +17,10 @@
 └── .gitignore
 ```
 
-Первичная настройка `pyproject.toml` будет следующей:
+Стартовый конфиг `pyproject.toml` будет следующим:
 
 ```toml
+# `pyproject.toml` file
 [tool.poetry]
 name = "github_graphql_client"
 version = "0.1.0"
@@ -69,6 +70,7 @@ Writing lock file
 файл `pyproject.toml`
 
 ```toml
+# `pyproject.toml` file
 # ...
 
 [tool.poetry.dependencies]

@@ -1,3 +1,6 @@
+#
+# mkdocs build --verbose --clean --strict
+#
 site_name: github-graphql-client
 site_description: GraphQL client in python.
 
@@ -24,9 +27,11 @@ repo_url: https://github.com/denisart/github-graphql-client
 site_url: https://denisart.github.io/github-graphql-client/
 
 nav:
-    - Preparation: preparation.md
-    - First query: first_query.md
-    - Gql client: gql_client.md
+    - Index: index.md
+    - Preparation: 02_preparation.md
+    - First query: 03_first_query.md
+    - First client: 04_first_client.md
+    - Async client: 05_async_client.md
 
 plugins:
   - search
