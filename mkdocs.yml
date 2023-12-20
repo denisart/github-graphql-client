@@ -32,6 +32,7 @@ nav:
     - First query: 03_first_query.md
     - First client: 04_first_client.md
     - Async client: 05_async_client.md
+    - Full client: 06_full_client.md
 
 plugins:
   - search

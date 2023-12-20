@@ -135,8 +135,6 @@ $ python3 scripts/run.py
 {'repository': {'issues': {'edges': [{'node': {'title': 'More PageEvent Triggers', 'url': 'https://github.com/pydantic/FastUI/issues/104'}}, {'node': {'title': 'TypeError: Interval() takes no arguments', 'url': 'https://github.com/pydantic/FastUI/issues/105'}}]}}}
 ```
 
-### Асинхронный клиент
-
 Теперь создадим асинхронный клиент для работы с `BaseAsyncTransport`.
 
 ```python
