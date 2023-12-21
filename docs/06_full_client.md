@@ -1,7 +1,7 @@
 ## Создаем клиент
 
-Теперь объединим `SyncGraphQLClient` и `AsyncGraphQLClient`, чтобы
-использовать один интерфейс. Создадим файл `github_graphql_client/client/client.py`.
+Пора объединить `SyncGraphQLClient` и `AsyncGraphQLClient` в один `GraphQLClient`,
+чтобы использовать один интерфейс. Создадим файл `github_graphql_client/client/client.py`.
 
 ```python
 # `github_graphql_client/client/client.py` file
@@ -95,8 +95,9 @@ class GraphQLClient(SyncGraphQLClient, AsyncGraphQLClient):
 ```
 
 Два основных метода для использования: `execute` и `execute_batch`. Внутри
-эти методы определяют какой тип у "Транспорта", а после вызывают код запуска из
-наших прошлых примеров. Попробовать можно с помощью следующего кода
+эти методы определяют тип `Transport`, а после вызывают код запуска из
+наших прошлых примеров. Попробовать реализованное
+можно с помощью следующего кода
 
 ```python
 # `scripts/run.py` file
@@ -113,7 +114,7 @@ def main():
     )
 
     client_r = GraphQLClient(transport=transport_r)
-    client_a = GraphQLClient(transport=transport_r)
+    client_a = GraphQLClient(transport=transport_a)
 
     q_1 = get_repository_issues_query(
         "pydantic",
@@ -128,26 +129,27 @@ def main():
         "pydantic-core",
     )
 
-    data_11 = client_r.execute(q_1, {})
-    data_21 = client_a.execute(q_1, {})
+    data_r1 = client_r.execute(q_1, {})
+    data_a1 = client_a.execute(q_1, {})
 
-    data_12 = client_r.execute_batch([q_1, q_2, q_3], [{}, {}, {}])
-    data_22 = client_a.execute_batch([q_1, q_2, q_3], [{}, {}, {}])
+    data_r3 = client_r.execute_batch([q_1, q_2, q_3], [{}, {}, {}])
+    data_a3 = client_a.execute_batch([q_1, q_2, q_3], [{}, {}, {}])
 
 ...
 ```
 
 Поздравляю, мы только что написали свою упрощенную версию библиотеки [gql](https://gql.readthedocs.io/en/stable/index.html).
-`gql` основана на той же идее, что мы реализовали, но имеет поверх много дополнительной обвязки:
+`gql` основана на той же идее, но имеет много дополнительной обвязки:
 
-- различные реализации backend (включая веб-сокеты),
-- проверки проблем с соединениями,
-- проверки корректности результата от сервера.
+- различные реализации backend: `requests`, `async`, `websockets`;
+- различные проверки, которые мы осознанно опускали;
+- валидация запросов;
+- проверка ошибки запроса от сервера;
 
 ### Пробуем gql
 
-Мы не будем изучать всю документацию `gql`, попробуем только с помощью нее выполнить наш запрос.
-Установим пакет следующим образом
+Мы не будем тут приводить всю документацию `gql`, но рассмотрим один пример.
+Выполним наш запрос с помощью `gql`. Установим пакет следующим образом
 
 ```bash
 poetry add "gql[all]"
@@ -155,7 +157,7 @@ poetry add "gql[all]"
 
 И запустим пример из документации для нашего запроса
 
-```bash
+```python
 # `scripts/run.py` file
 ...
 
@@ -199,12 +201,16 @@ $ python3 scripts/run.py
 Duration for main is 8.5059 seconds
 ```
 
-Ого, 8 секунд! Запрос тот же самый, а значит
-время уходит на накладные расходы самой библиотеки. Это связано
-с параметром `fetch_schema_from_transport`, который можно указать во время инициализации клиента.
+Ого, 8 секунд! Но запрос тот же самый. Значит время уходит не на ожидание ответа от сервера, 
+а на накладные расходы самой библиотеки. 
+Эти накладные расходы связаны с параметром `fetch_schema_from_transport`.
+
 Пакет `gql` базируется на библиотеке [graphql-core](https://github.com/graphql-python/graphql-core),
 которая является `python` реализацией проекта [GraphQL.js](https://github.com/graphql/graphql-js).
 И если параметр `fetch_schema_from_transport` имеет значение `True`, то во время первого запроса
-клиент фетчит схему и билдит ее в формат `graphql_core.GraphQLSchema`. На момент написания
-статьи схема `github GraphQL API` содержит `61602` строки. Т.е. все это время уходит именно
-на анализ схемы, которая, конечно, довольно большая.
+клиент фетчит схему и билдит ее в формат `graphql_core.GraphQLSchema`.
+
+На момент написания статьи схема `github GraphQL API` содержит `61602` строки.
+Т.е. все 8 секунд уходит именно на анализ схемы, которая, конечно, довольно большая.
+Если `fetch_schema_from_transport=False`, то время выполнения запроса будет совпадать
+с временем выполнения нашим клиентом.
