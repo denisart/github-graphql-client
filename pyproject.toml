@@ -12,6 +12,7 @@ python-dotenv = "^1.0.0"
 requests = "^2.31.0"
 gql = {extras = ["all"], version = "^3.4.1"}
 aiohttp = "^3.9.1"
+graphql-query = "^1.2.2"
 
 [tool.poetry.group.dev.dependencies]
 black = "^23.12.0"
