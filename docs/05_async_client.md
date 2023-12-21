@@ -1,10 +1,10 @@
 ## Асинхронный клиент
 
 В предыдущем примере мы ожидаем ответ первого запроса и только после этого
-отправляем второй запрос. Зачем нам тратить столько времени? Давайте создадим
-асинхронный транспорт.
+отправляем второй запрос. Зачем нам тратить столько времени? Давайте реализуем
+асинхронное соединение.
 
-В файле `github_graphql_client/transport/base.py` определим класс `BaseTransport`
+В файле `github_graphql_client/transport/base.py` добавим класс `BaseAsyncTransport`
 
 ```python
 # `github_graphql_client/transport/base.py` file
@@ -26,7 +26,6 @@ class BaseAsyncTransport:
     async def close(self) -> None:
         """Close a session."""
         raise NotImplementedError
-
 ```
 
 Для примера реализуем асинхронный backend на `aiohttp`. Добавим этот пакет в проект
@@ -35,7 +34,7 @@ class BaseAsyncTransport:
 poetry add aiohttp
 ```
 
-В новом файле `github_graphql_client/transport/aiohttp.py` определим класс `AIOHTTPTransport`
+В новом файле `github_graphql_client/transport/aiohttp.py` создадим класс `AIOHTTPTransport`
 
 ```python
 # `github_graphql_client/transport/aiohttp.py` file
@@ -94,11 +93,12 @@ class AIOHTTPTransport(BaseAsyncTransport):
 
 Тут все очень похоже на `RequestsTransport`
 
-- `connect` - это корутина, которая создает сессию с помощью `aiohttp`;
-- `close` - корутина, которая закрывает `aiohttp` сессию;
-- `execute` - корутина, которая с помощью открытой `aiohttp` сессии получает данные с сервера;
+- `connect` - это корутина, которая создает сессию с помощью `aiohttp.ClientSession`;
+- `close` - корутина, которая завершает `aiohttp.ClientSession`;
+- `execute` - корутина, которая с помощью открытой `aiohttp.ClientSession` асинхронно получает данные с сервера;
+- для правильной установки таймаута используем `aiohttp.ClientTimeout`;
 
-Попробуем
+Проверим асинхронную работу `AIOHTTPTransport` с помощью `asyncio`
 
 ```python
 # `scripts/run.py` file
@@ -128,14 +128,14 @@ if __name__ == "__main__":
 
 ```
 
-Мы получим тот же результат
+Результат нам уже знаком
 
 ```bash
 $ python3 scripts/run.py
 {'repository': {'issues': {'edges': [{'node': {'title': 'More PageEvent Triggers', 'url': 'https://github.com/pydantic/FastUI/issues/104'}}, {'node': {'title': 'TypeError: Interval() takes no arguments', 'url': 'https://github.com/pydantic/FastUI/issues/105'}}]}}}
 ```
 
-Теперь создадим асинхронный клиент для работы с `BaseAsyncTransport`.
+Создадим теперь асинхронный клиент для работы с `BaseAsyncTransport`.
 
 ```python
 # `github_graphql_client/client/async_client.py` file`
@@ -173,8 +173,7 @@ class AsyncGraphQLClient:
 
 ```
 
-Тут все так же, как в `SyncGraphQLClient`, но в асинхронной версии.
-Проверим
+Тут все почти так же, как в `SyncGraphQLClient`, но асинхронно. Проверим
 
 ```python
 # `scripts/run.py` file
@@ -206,7 +205,7 @@ $ python3 scripts/run.py
 {'repository': {'issues': {'edges': [{'node': {'title': 'More PageEvent Triggers', 'url': 'https://github.com/pydantic/FastUI/issues/104'}}, {'node': {'title': 'TypeError: Interval() takes no arguments', 'url': 'https://github.com/pydantic/FastUI/issues/105'}}]}}}
 ```
 
-Теперь перепишем последний пример предыдущего раздела с помощью нового асинхронного клиента
+Теперь перепишем последний пример предыдущего раздела с помощью нового асинхронного клиента.
 
 ```python
 # `scripts/run.py` file
@@ -272,8 +271,8 @@ def main():
 ...
 ```
 
-В контекстном менеджере клиента `AsyncGraphQLClient` мы запускаем несколько задач
-`execute`. Для удобства добавим декоратор `check_execute`, который будет выводить
+В контекстном менеджере клиента `AsyncGraphQLClient` мы асинхронно запускаем несколько задач
+`execute`. Это реализовано с помощью `asyncio.TaskGroup`. Декоратор `check_execute` выводит для нас
 время выполнения
 
 ```bash
@@ -287,4 +286,5 @@ Duration for execute is 0.5991 seconds
 Duration for amain is 0.6005 seconds
 ```
 
-Теперь мы видим, что клиент не тратит время на ожидание ответа с сервера.
+Теперь мы получили, что время выполнения функции `amain` почти равно времени
+выполнения самого длительного запроса.
