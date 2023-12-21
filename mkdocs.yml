@@ -33,6 +33,8 @@ nav:
     - First client: 04_first_client.md
     - Async client: 05_async_client.md
     - Full client: 06_full_client.md
+    - GraphQL queries: 07_graphql_query.md
+    - Data model: 08_data_model.md
 
 plugins:
   - search

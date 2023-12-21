@@ -13,6 +13,8 @@ requests = "^2.31.0"
 gql = {extras = ["all"], version = "^3.4.1"}
 aiohttp = "^3.9.1"
 graphql-query = "^1.2.2"
+pydantic = "^2.5.2"
+datamodel-code-generator = {extras = ["graphql"], version = "^0.25.1"}
 
 [tool.poetry.group.dev.dependencies]
 black = "^23.12.0"
