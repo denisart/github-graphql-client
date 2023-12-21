@@ -1,9 +1,9 @@
 ## Первый запрос
 
-Самое простое, что должен уметь наш клиент -- выполнять запросы.
-[Обычно](https://graphql.org/learn/best-practices/) `GraphQL` работает через `HTTP/HTTPS` с некоторым `POST`,
+Основное, что должен уметь наш клиент - подключаться к серверу.
+[Обычно](https://graphql.org/learn/best-practices/) `GraphQL` работает по протоколу `HTTP/HTTPS` через единственный `POST`,
 который ожидает на входе `json` с полями `query: str` и `variables: dict[str, Any]`.
-Именно так это работает в `github GraphQL API`. Схему `github GraphQL API`
+Так это работает и в `github GraphQL API`. Схему `github GraphQL API`
 можно посмотреть [тут](https://docs.github.com/en/graphql/overview/public-schema).
 
 Для начала спроектируем класс, который будет отвечать непосредственно за соединение
@@ -14,7 +14,7 @@ mkdir github_graphql_client/transport
 touch github_graphql_client/transport/__init__.py github_graphql_client/transport/base.py
 ```
 
-В файле `github_graphql_client/transport/base.py` определим класс `BaseTransport`
+В файле `github_graphql_client/transport/base.py` определим `BaseTransport`
 
 ```python
 # `github_graphql_client/transport/base.py` file
@@ -39,14 +39,14 @@ class BaseTransport:
 
 ```
 
-Любой класс типа "Транспорт" далее будем реализовать наследуясь от `BaseTransport`.
-Для этого необходимо будет реализовать три метода
+Любой класс типа `Transport` должен наследоваться от `BaseTransport`.
+Для этого необходимо реализовать три метода
 
-- `connect` - метод, который открывает соединение с сервером;
-- `close` - метод, который закрывает соединение с сервером;
-- `execute` - метод, который получает на вход строку с `GraphQL` запросом и словарь `GraphQL` переменных, а на выходе возвращает ответ сервера;
+- `connect` - метод для открытия соединения с сервером;
+- `close` - метод для закрытия соединения;
+- `execute` - метод для выполнения запроса `query` с переменными `variables`;
 
-Так, как `GraphQL` запрос есть по сути обычный `POST` запрос -- клиент
+Так, как `GraphQL` запрос есть обычный `POST` запрос - клиент
 может быть реализован с помощью пакета [requests](https://pypi.org/project/requests/). Для начала добавим
 зависимость
 
@@ -109,17 +109,17 @@ class RequestsTransport(BaseTransport):
 
 ```
 
-В данном примере
+В данной реализации
 
-- `connect` создает объект `requests.Session` (если он не был создан ранее);
+- `connect` создает объект `requests.Session` если он не был создан ранее;
 - `close` закрывает соединение для объекта `requests.Session`;
 - `execute` отправляет с помощью объекта `requests.Session` обычный `POST` запрос;
 
-Давайте проверим, что с помощью этого класса уже можно получить данные. 
-Отправим `query`, который вернет несколько завершенных `issues` 
+Давайте проверим, что с помощью этого класса мы уже можем получить данные. 
+Отправим `query`, который должен вернуть несколько первых завершенных `issues` 
 из выбранного `github` репозитория. Для примера,
-рассмотрим новый проект автора `pydantic` -- [FastUI](https://github.com/pydantic/FastUI).
-Создадим для хранения запросов отдельную папку
+рассмотрим новый проект автора `pydantic` - [FastUI](https://github.com/pydantic/FastUI).
+Хранить запросы будем в отдельной папке
 
 ```bash
 mkdir github_graphql_client/queries
@@ -187,7 +187,7 @@ $ python3 scripts/run.py
 {'repository': {'issues': {'edges': [{'node': {'title': 'More PageEvent Triggers', 'url': 'https://github.com/pydantic/FastUI/issues/104'}}, {'node': {'title': 'TypeError: Interval() takes no arguments', 'url': 'https://github.com/pydantic/FastUI/issues/105'}}]}}}
 ```
 
-Мы получили несколько issues. Проект активно живет, так что вы должны получить другие issues :)
+Мы получили несколько issues. Проект активно живет, поэтому сейчас issues будут другими.
 
 ### Таймаут
 
@@ -248,7 +248,7 @@ def main():
 
 ```
 
-Запустим `scripts/run.py`, мы получим следующее
+Запустив `scripts/run.py`, мы получим следующее
 
 ```bash
 $ python3 scripts/run.py

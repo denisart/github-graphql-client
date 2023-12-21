@@ -38,8 +38,8 @@ build-backend = "poetry.core.masonry.api"
 ```
 
 Во-вторых, `Github GraphQL endpoint` находится по адресу `https://api.github.com/graphql`.
-Чтобы воспользоваться `API` --
-нужно получить токен. Подробности про выпуск токена можно посмотреть тут: [Github - Forming calls with GraphQL](https://docs.github.com/en/graphql/guides/forming-calls-with-graphql).
+Чтобы воспользоваться `API` - нужно получить токен.
+Подробности про выпуск токена можно посмотреть тут: [Github - Forming calls with GraphQL](https://docs.github.com/en/graphql/guides/forming-calls-with-graphql).
 В файле `.env` перечислим следующие параметры
 
 ```dotenv
