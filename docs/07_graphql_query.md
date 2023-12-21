@@ -223,9 +223,10 @@ poetry add graphql-query
 - У `graphql_query.Query` указываем имя, список аргументов через `graphql_query.Argument`, список полей.
 
 Поля, переменные, аргументы задаются специальными классами. А значит их легко шарить между
-разными запросами.
+разными запросами. Если у вас в проекте всего один запрос, то такой подход может усложнить разработку,
+потому что кода становится больше.
 
-Пример запроса `marketplaceCategories`
+Пример запроса `marketplaceCategories` в формате `graphql-query`
 
 ```python
 # `github_graphql_client/queries/marketplaceCategories.py` file
@@ -295,3 +296,6 @@ query getMarketplaceCategories(
   }
 }
 ```
+
+Все примеры реализации запросов из документации `GraphQL` с помощью `graphql-query` можно
+посмотреть в [документации](https://denisart.github.io/graphql-query/usage/).
