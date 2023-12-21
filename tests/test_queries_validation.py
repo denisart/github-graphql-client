@@ -1,19 +1,26 @@
 from pathlib import Path
 
-from gql import Client
-from graphql import Source, parse
+from graphql import Source, parse, build_schema, validate, GraphQLSchema
 
-from github_graphql_client.queries.repository import repository_issues_query
+from github_graphql_client.queries.repository import get_repository_issues_query
 
 SCHEMA_FILENAME = Path(__file__).parent / Path("data/schema.docs.graphql")
 
-with SCHEMA_FILENAME.open("r", encoding="utf8") as f:
-    schema_str = f.read()
+
+def get_schema() -> GraphQLSchema:
+    with SCHEMA_FILENAME.open("r", encoding="utf8") as f:
+        schema_str = f.read()
+
+    return build_schema(schema_str)
 
 
-client = Client(schema=schema_str)
+schema = get_schema()
 
 
 def test_repository_issues_query():
-    source = Source(repository_issues_query)
-    client.validate(parse(source))
+    query = get_repository_issues_query("pydantic", "FastUI")
+    document = parse(Source(query))
+
+    validation_errors = validate(schema, document)
+    if validation_errors:
+        raise validation_errors[0]

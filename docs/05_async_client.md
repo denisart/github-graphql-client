@@ -269,9 +269,7 @@ async def amain():
 def main():
     asyncio.run(amain())
 
-if __name__ == "__main__":
-    main()
-
+...
 ```
 
 В контекстном менеджере клиента `AsyncGraphQLClient` мы запускаем несколько задач
