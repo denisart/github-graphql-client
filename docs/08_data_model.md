@@ -40,7 +40,7 @@ $ python3 scripts/run.py
 {'repository': {'issues': {'edges': [{'node': {'title': "Can't use config keyword argument with TypeAdapter.__init__ on stdlib dataclass", 'url': 'https://github.com/pydantic/pydantic/issues/8326'}}, {'node': {'title': 'Constructor for model with `Json[list[int]]` field should accept `list[int]`, like mypy already expects', 'url': 'https://github.com/pydantic/pydantic/issues/8336'}}, {'node': {'title': 'JSON serialization issue with ipaddress classes as alternative', 'url': 'https://github.com/pydantic/pydantic/issues/8343'}}, {'node': {'title': 'Indeterminate: LookupError when generating custom schema output', 'url': 'https://github.com/pydantic/pydantic/issues/8359'}}, {'node': {'title': 'Implement more clear warning/error when using constraints on compound types', 'url': 'https://github.com/pydantic/pydantic/issues/8362'}}, {'node': {'title': 'Magic validation methods needs to be documented for version 2', 'url': 'https://github.com/pydantic/pydantic/issues/8374'}}, {'node': {'title': 'More consistent and intuitive `alias` behavior for validation and serialization', 'url': 'https://github.com/pydantic/pydantic/issues/8379'}}, {'node': {'title': 'Common mistakes docs section', 'url': 'https://github.com/pydantic/pydantic/issues/8380'}}, {'node': {'title': 'Deprecate `update_json_schema` function', 'url': 'https://github.com/pydantic/pydantic/issues/8381'}}, {'node': {'title': 'coerce_numbers_to_str needs a per-field variant', 'url': 'https://github.com/pydantic/pydantic/issues/8383'}}, {'node': {'title': 'Bus error when using custom type impl with SQLAlchemy ', 'url': 'https://github.com/pydantic/pydantic/issues/8385'}}, {'node': {'title': 'Allow optional properties to be truely optional', 'url': 'https://github.com/pydantic/pydantic/issues/8394'}}, {'node': {'title': '`@property` changes behavior when using dataclass-ish classes', 'url': 'https://github.com/pydantic/pydantic/issues/8401'}}, {'node': {'title': "Regex's pattern is not serialized when creating a model's JSON schema", 'url': 'https://github.com/pydantic/pydantic/issues/8405'}}, {'node': {'title': 'cached_property is not ignored when a model is copied and updated', 'url': 'https://github.com/pydantic/pydantic/issues/8406'}}, {'node': {'title': 'BaseModel causes information loss with Generic classes', 'url': 'https://github.com/pydantic/pydantic/issues/8410'}}, {'node': {'title': "JSON Schema is wrong when `mode='serialization'` and fields have a default", 'url': 'https://github.com/pydantic/pydantic/issues/8413'}}, {'node': {'title': 'Bytes and Bits Conversion Type', 'url': 'https://github.com/pydantic/pydantic/issues/8415'}}, {'node': {'title': 'Debian/ubuntu packages for v2', 'url': 'https://github.com/pydantic/pydantic/issues/8416'}}, {'node': {'title': "Union discriminator tag fails if '_' is in the literal value", 'url': 'https://github.com/pydantic/pydantic/issues/8417'}}]}}}
 ```
 
-Давайте пробежимся по `issues` и принтанем все `title`. Код будет примерно таким
+Пробежимся по `issues` и принтанем все `title`. Код будет примерно таким
 
 ```python
 for issue in result["repository"]["issues"]["edges"]:
@@ -54,20 +54,24 @@ for issue in repository.issues.edges:
     print(issue.node.title)
 ```
 
-Для этого можно создать классы, повторяющие типа из `GraphQL` схемы. Тут есть две проблемы
-как создавать классы? Какой использовать базовый класс?
+Для этого можно создать классы, повторяющие типы из `GraphQL` схемы.
+Есть два вопроса
+
+- какой базовый класс использовать?
+- как, имея схему, генерить эти классы?
 
 ### Базовый класс
 
 Первый вариант - `dataclasses.dataclass`. Это хорошо, но возникает проблема
-для вложенных типов. Альтернативный вариант [dataclasses-json](https://github.com/lidatong/dataclasses-json).
-Это обычные дата-классы дополненные методами `from_json`, `from_dict`, которые
-умеют преобразовывать вложенные типы. Проблемы
+при десериализации вложенных типов. Альтернативный вариант [dataclasses-json](https://github.com/lidatong/dataclasses-json).
+Это дата-классы дополненные методами `from_json`, `from_dict`. Некоторые проблемы
+при таком подходе
 
-- необходы свои сериализаторы/десеарилазоты для типа `union` (в новых версиях проблема может быть решена);
-- преобразование объекта с глубокой вложенность может занимать много времени;
+- необходы свои сериализаторы/десериализаторы для типа `union` (в новых версиях проблема может быть решена);
+- преобразование объекта с глубокой вложенность может занимать значительное время;
 
-Современный подход - `pydantic`. Рассмотрим наш пример (не забыл добавить `pydantic` в проект)
+Современный подход, решающий описанные проблемы - `pydantic`.
+Рассмотрим наш пример (не забывая добавить `pydantic` в проект)
 
 ```python
 from pydantic import BaseModel
@@ -91,27 +95,56 @@ for issue in repository.issues.edges:
     print(issue.node.title)
 ```
 
-## Поддержка классов
+Результат
 
-Представим, сколько нужно создать классов, чтобы полностью описать всю схему
-`github GraphQL API`. Так же, если эта схема часто изменяется - нужно выполнять
-много рутинной работы по актуализации дата-модели. Хочется создавать классы автоматически
-по имеющейся схеме.
- 
-Эта необходимость привела к созданию библиотеки [graphql2python](https://denisart.github.io/graphql2python/).
-Сейчас эти наработки перенесены в библиотеку [datamodel-code-generator](https://github.com/koxudaxi/datamodel-code-generator) -
+```
+Can't use config keyword argument with TypeAdapter.__init__ on stdlib dataclass
+Constructor for model with `Json[list[int]]` field should accept `list[int]`, like mypy already expects
+JSON serialization issue with ipaddress classes as alternative
+Indeterminate: LookupError when generating custom schema output
+Implement more clear warning/error when using constraints on compound types
+Magic validation methods needs to be documented for version 2
+More consistent and intuitive `alias` behavior for validation and serialization
+Common mistakes docs section
+Deprecate `update_json_schema` function
+coerce_numbers_to_str needs a per-field variant
+Bus error when using custom type impl with SQLAlchemy 
+Allow optional properties to be truely optional
+`@property` changes behavior when using dataclass-ish classes
+Regex's pattern is not serialized when creating a model's JSON schema
+cached_property is not ignored when a model is copied and updated
+BaseModel causes information loss with Generic classes
+JSON Schema is wrong when `mode='serialization'` and fields have a default
+Bytes and Bits Conversion Type
+Debian/ubuntu packages for v2
+Union discriminator tag fails if '_' is in the literal value
+```
+
+## Генерация классов
+
+Чтобы вручную создать все классы, описанные в схеме
+`github GraphQL API`, может потребоваться много времени и концентрации.
+Если же схема часто изменяется (что может быть на начальных этапах разработки) -
+нужно выполнять много рутинной работы по актуализации. Удобно иметь возможность
+генерить классы автоматически при изменении схемы.
+
+Описанная проблема привела к созданию библиотеки [graphql2python](https://denisart.github.io/graphql2python/)
+для генерации `pydantic` модели данных по некоторой `GraphQL` смехе.
+Недавно в бета режиме эти наработки перенесены в библиотеку [datamodel-code-generator](https://github.com/koxudaxi/datamodel-code-generator) -
 известную библиотеку для генерации модели данных по `Open API` схеме.
 
 Запустим `datamodel-code-generator` для нашей схемы
 
 ```bash
+$ poetry add "datamodel-code-generator[graphql]"
 $ datamodel-codegen --input tests/data/schema.docs.graphql --input-file-type graphql --output github_graphql_client/model.py
 ```
 
-Примеры классов выше, но в формате, сгенерированном `datamodel-code-generator` (без настроек)
+Классы из примера выше в формате `datamodel-code-generator` будут выглядеть
+следующим образом
 
 ```python
-# `github_graphql_client/mode.py` file
+# `github_graphql_client/model.py` file
 ...
 
 class Issue(
@@ -185,3 +218,15 @@ class Repository(
 
 ...
 ```
+
+Пакет `datamodel-code-generator` имеет гибкую настройку результирующей модели данных.
+Например, можно указать
+
+- версию `pydantic`;
+- версию `python`;
+- альтернативный класс (например, `dataclasses.dataclass`);
+- имена полей для некоторых типов;
+- свои кастомные шаблоны (написанные так же на `jinja2`);
+
+Подробнее со всеми возможностями `datamodel-code-generator` можно ознакомиться
+в документации.
