@@ -309,5 +309,6 @@ query getMarketplaceCategories(
 }
 ```
 
-Остальные примеры использования (включая `graphql_query.Fragment` и `graphql_query.InlineFragment`)
+Не забываем убедиться, что тест `test_get_marketplace_categories` все так же
+завершается успешно. Остальные примеры использования (включая `graphql_query.Fragment` и `graphql_query.InlineFragment`)
 можно посмотреть в документации.
