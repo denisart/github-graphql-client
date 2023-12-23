@@ -35,6 +35,7 @@ nav:
     - Full client: 06_full_client.md
     - GraphQL queries: 07_graphql_query.md
     - Data model: 08_data_model.md
+    - Conclusion: 09_conclusion.md
 
 plugins:
   - search
