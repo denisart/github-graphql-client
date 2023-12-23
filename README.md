@@ -1,4 +1,6 @@
-# GraphQL client in python
+# Клиент GraphQL на Python
+
+<img title="Cover" alt="Cover" src="/docs/Cover1.png">
 
 Исходники статьи `Клиент GraphQL на Python`. Сама статья находится в
 каталоге `docs/`, исходники в `github_graphql_client/`.
