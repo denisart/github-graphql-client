@@ -1,10 +1,11 @@
 ## Асинхронный клиент
 
-В предыдущем примере мы ожидаем ответ первого запроса и только после этого
-отправляем второй запрос. Зачем нам тратить столько времени? Давайте реализуем
+В предыдущем примере мы ожидали ответ на первый запрос и только после этого
+отправляли второй запрос. Зачем нам тратить столько времени? Давайте реализуем
 асинхронное соединение.
 
 В файле `github_graphql_client/transport/base.py` добавим класс `BaseAsyncTransport`
+по аналогии с `BaseTransport`
 
 ```python
 # `github_graphql_client/transport/base.py` file
@@ -28,7 +29,8 @@ class BaseAsyncTransport:
         raise NotImplementedError
 ```
 
-Для примера реализуем асинхронный backend на `aiohttp`. Добавим этот пакет в проект
+Для примера реализуем асинхронный backend на [aiohttp](https://docs.aiohttp.org/en/stable/index.html).
+Добавим этот пакет в проект
 
 ```bash
 poetry add aiohttp
@@ -98,7 +100,7 @@ class AIOHTTPTransport(BaseAsyncTransport):
 - `execute` - корутина, которая с помощью открытой `aiohttp.ClientSession` асинхронно получает данные с сервера;
 - для правильной установки таймаута используем `aiohttp.ClientTimeout`;
 
-Проверим асинхронную работу `AIOHTTPTransport` с помощью `asyncio`
+Проверим асинхронную работу `AIOHTTPTransport` с помощью [asyncio](https://docs.python.org/3/library/asyncio.html)
 
 ```python
 # `scripts/run.py` file
@@ -135,7 +137,7 @@ $ python3 scripts/run.py
 {'repository': {'issues': {'edges': [{'node': {'title': 'More PageEvent Triggers', 'url': 'https://github.com/pydantic/FastUI/issues/104'}}, {'node': {'title': 'TypeError: Interval() takes no arguments', 'url': 'https://github.com/pydantic/FastUI/issues/105'}}]}}}
 ```
 
-Создадим теперь асинхронный клиент для работы с `BaseAsyncTransport`.
+Создадим теперь асинхронный клиент для работы с `BaseAsyncTransport`
 
 ```python
 # `github_graphql_client/client/async_client.py` file`
@@ -205,7 +207,7 @@ $ python3 scripts/run.py
 {'repository': {'issues': {'edges': [{'node': {'title': 'More PageEvent Triggers', 'url': 'https://github.com/pydantic/FastUI/issues/104'}}, {'node': {'title': 'TypeError: Interval() takes no arguments', 'url': 'https://github.com/pydantic/FastUI/issues/105'}}]}}}
 ```
 
-Теперь перепишем последний пример предыдущего раздела с помощью нового асинхронного клиента.
+Теперь перепишем последний пример предыдущего раздела с помощью нового асинхронного клиента
 
 ```python
 # `scripts/run.py` file

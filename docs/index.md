@@ -1,4 +1,4 @@
-# Клиент GraphQL на Python
+# Пишем свой GraphQL клиент на Python
 
 <img title="Cover" alt="Cover" src="/docs/Cover1.png">
 
@@ -31,4 +31,5 @@
 Но для комфортного чтения статьи желательно знать основы GraphQL.
 Так же будет плюсом иметь опыт работы с библиотеками `requests` и `aiohttp`.
 
-Исходный код из статьи можно найти [тут](https://github.com/denisart/github-graphql-client).
+Исходный код из статьи можно найти [тут](https://github.com/denisart/github-graphql-client). Код написан на `python 3.11`
+с использованием `poetry`, типизирован и отформатирован с помощью [black](https://black.readthedocs.io/en/stable/).

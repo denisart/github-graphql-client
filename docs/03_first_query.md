@@ -1,6 +1,6 @@
 ## Первый запрос
 
-Основное, что должен уметь наш клиент - подключаться к серверу.
+Основное, что должен уметь наш клиент — подключаться к серверу.
 [Обычно](https://graphql.org/learn/best-practices/) `GraphQL` работает по протоколу `HTTP/HTTPS` через единственный `POST`,
 который ожидает на входе `json` с полями `query: str` и `variables: dict[str, Any]`.
 Так это работает и в `github GraphQL API`. Схему `github GraphQL API`
@@ -42,11 +42,11 @@ class BaseTransport:
 Любой класс типа `Transport` должен наследоваться от `BaseTransport`.
 Для этого необходимо реализовать три метода
 
-- `connect` - метод для открытия соединения с сервером;
-- `close` - метод для закрытия соединения;
-- `execute` - метод для выполнения запроса `query` с переменными `variables`;
+- `connect` — метод для открытия соединения с сервером;
+- `close` — метод для закрытия соединения;
+- `execute` — метод для выполнения запроса `query` с переменными `variables`;
 
-Так, как `GraphQL` запрос есть обычный `POST` запрос - клиент
+Так, как `GraphQL` запрос есть обычный `POST` запрос — клиент
 может быть реализован с помощью пакета [requests](https://pypi.org/project/requests/). Для начала добавим
 зависимость
 
@@ -111,9 +111,9 @@ class RequestsTransport(BaseTransport):
 
 В данной реализации
 
-- `connect` создает объект `requests.Session` если он не был создан ранее;
-- `close` закрывает соединение для объекта `requests.Session`;
-- `execute` отправляет с помощью объекта `requests.Session` обычный `POST` запрос;
+- метод `connect` создает объект `requests.Session` если он не был создан ранее;
+- метод `close` закрывает соединение для объекта `requests.Session`;
+- метод `execute` отправляет с помощью объекта `requests.Session` обычный `POST` запрос;
 
 Давайте проверим, что с помощью этого класса мы уже можем получить данные. 
 Отправим `query`, который должен вернуть несколько первых завершенных `issues` 
@@ -187,12 +187,12 @@ $ python3 scripts/run.py
 {'repository': {'issues': {'edges': [{'node': {'title': 'More PageEvent Triggers', 'url': 'https://github.com/pydantic/FastUI/issues/104'}}, {'node': {'title': 'TypeError: Interval() takes no arguments', 'url': 'https://github.com/pydantic/FastUI/issues/105'}}]}}}
 ```
 
-Мы получили несколько issues. Проект активно живет, поэтому сейчас issues будут другими.
+Проект активно живет, поэтому сейчас issues будут другими.
 
 ### Таймаут
 
 Хорошо, если вы понимаете, сколько должен выполняться ваш запрос. Процитируем
-одну хорошо известную [статью](https://habr.com/ru/companies/oleg-bunin/articles/433476/)
+одну известную [статью](https://habr.com/ru/companies/oleg-bunin/articles/433476/)
 
 > Не ставить таймаут на задачу — это зло. Это значит, что вы не понимаете, что происходит
 > в задаче, как должна работать бизнес-логика.

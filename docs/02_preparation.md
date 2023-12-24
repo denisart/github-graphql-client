@@ -2,7 +2,7 @@
 
 Для начала подготовимся к работе с `github GraphQL API`. Во-первых, настроим наше
 `python` окружение. Будем использовать [poetry](https://python-poetry.org/) и следующую начальную структуру
-файлов:
+файлов
 
 ```
 ├── github_graphql_client/  <- Тут будет код нашего клиента
@@ -38,8 +38,8 @@ build-backend = "poetry.core.masonry.api"
 ```
 
 Во-вторых, `Github GraphQL endpoint` находится по адресу `https://api.github.com/graphql`.
-Чтобы воспользоваться `API` - нужно получить токен.
-Подробности про выпуск токена можно посмотреть тут: [Github - Forming calls with GraphQL](https://docs.github.com/en/graphql/guides/forming-calls-with-graphql).
+Чтобы воспользоваться `API` — нужно получить токен.
+Подробности про выпуск токена описаны тут: [Github - Forming calls with GraphQL](https://docs.github.com/en/graphql/guides/forming-calls-with-graphql).
 В файле `.env` перечислим следующие параметры
 
 ```dotenv
@@ -48,7 +48,7 @@ GITHUB_GRAPHQL_ENDPOINT=https://api.github.com/graphql
 ```
 
 Для работы с файлом `.env` будем использовать пакет [python-dotenv](https://pypi.org/project/python-dotenv/).
-Добавим его в качестве нашей первой зависимости:
+Добавим его в качестве нашей первой зависимости
 
 ```bash
 $ poetry add  python-dotenv
