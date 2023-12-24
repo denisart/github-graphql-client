@@ -28,14 +28,14 @@ site_url: https://denisart.github.io/github-graphql-client/
 
 nav:
     - Index: index.md
-    - Preparation: 02_preparation.md
-    - First query: 03_first_query.md
-    - First client: 04_first_client.md
-    - Async client: 05_async_client.md
-    - Full client: 06_full_client.md
-    - GraphQL queries: 07_graphql_query.md
-    - Data model: 08_data_model.md
-    - Conclusion: 09_conclusion.md
+    - Подготовка: 02_preparation.md
+    - Первый запрос: 03_first_query.md
+    - Синхронный клиент: 04_first_client.md
+    - Асинхронный клиент: 05_async_client.md
+    - Создаем клиент: 06_full_client.md
+    - Работа с запросами: 07_graphql_query.md
+    - Генерация модели данных: 08_data_model.md
+    - Заключение: 09_conclusion.md
 
 plugins:
   - search
